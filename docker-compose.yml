@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+
+  tfserving:
+    image: tensorflow/serving
+    restart: always
+    volumes:
+      - ./training/model:/models/saved_model
+    environment:
+      - MODEL_NAME=saved_model
+    ports:
+      - "8501:8501"
+    networks:
+      - connection
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    tty: true
+    volumes:
+      - ./src:/src
+    networks:
+      - connection
+
+networks:
+  connection:
+    driver: bridge
