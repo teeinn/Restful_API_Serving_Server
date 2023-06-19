@@ -1,5 +1,48 @@
 import pytest
 from requests import Response
+import pandas as pd
+from io import BytesIO
+from app.model_info import modelInfo
+
+
+class Data:
+    def __init__(self):
+        self.data_path = "../data/test.csv"
+        self.invalid_data_path = "../data/invalid_test.csv"
+
+        with open(self.data_path, 'rb') as f:
+            self.bytesData = f.read()
+
+        with open(self.invalid_data_path, 'rb') as f:
+            self.invalid_bytesData = f.read()
+
+    def file_path(self):
+        return self.data_path
+
+    def invalid_file_path(self):
+        return self.invalid_data_path
+
+    def bytes_data(self):
+        return self.bytesData
+
+    def invalid_bytes_data(self):
+        return self.invalid_bytesData
+
+    def list_data(self):
+        df = pd.read_csv(BytesIO(self.bytesData))
+        data = df.rename(columns=modelInfo.column_name_to_change)
+        data[modelInfo.label] = data[modelInfo.label].map(modelInfo.classes.index)
+        data = data.drop(modelInfo.label, axis=1)
+        return data.to_dict('records')
+
+    def prediction(self):
+        return [[0.0233333353, 0.976665854, 0.0]]
+
+    def final_result(self):
+        return ['Moderate']
+data = Data()
+
+
 
 def mocked_requests_post(url, data, headers):
     class MockResponse:
@@ -14,37 +57,31 @@ def mocked_requests_post(url, data, headers):
     return MockResponse(url, data, headers).get_response()
 
 
+
 @pytest.fixture
 def bytes_data():
-    bytesData = b'Gender,Age,Education Level,Institution Type,IT Student,' \
-                b'Location,Load-shedding,Financial Condition,Internet Type,Network Type,' \
-                b'Class Duration,Self Lms,Device,Adaptivity Level\nGirl,21-25,University,' \
-                b'Non Government,No,Yes,Low,Mid,Wifi,4G,3-6,No,Computer,Moderate\n'
-    return bytesData
+    return data.bytes_data()
 
 @pytest.fixture
 def invalid_bytes_data():
-    invalid_bytesData = b'Gender,Age,Education Level,Institution Type,IT Student,' \
-                        b'Location,Load-shedding,Financial Condition,Internet Type,Network Type,' \
-                        b'Class Duration,Self Lms,Device\nGirl,21-25,University,' \
-                        b'Non Government,No,Yes,Low,Mid,Wifi,4G,3-6,No,Computer\n'
-    return invalid_bytesData
+    return data.invalid_bytes_data()
 
 @pytest.fixture
 def list_data():
-    listData = [{'Gender': 'Girl', 'Age': '21-25', 'Education_Level': 'University',
-                 'Institution_Type': 'Non Government', 'IT_Student': 'No', 'Location': 'Yes',
-                 'Load_shedding': 'Low', 'Financial_Condition': 'Mid', 'Internet_Type': 'Wifi',
-                 'Network_Type': '4G', 'Class_Duration': '3-6', 'Self_Lms': 'No', 'Device': 'Computer'}]
-    return listData
-
+    return data.list_data()
 
 @pytest.fixture
 def prediction():
-    prediction_result = [[0.0233333353, 0.976665854, 0.0]]
-    return prediction_result
+    return data.prediction()
 
 @pytest.fixture
 def final_result():
-    final_result = ['Moderate']
-    return final_result
+    return data.final_result()
+
+@pytest.fixture
+def file_path():
+    return data.file_path()
+
+@pytest.fixture
+def invalid_file_path():
+    return data.invalid_file_path()

@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from app.entrypoints.main import app
 from tests.unit.conftest import *

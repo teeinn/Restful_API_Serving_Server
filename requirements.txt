@@ -18,6 +18,8 @@ google-pasta==0.2.0
 grpcio==1.54.2
 h11==0.14.0
 h5py==3.8.0
+httpcore==0.17.2
+httpx==0.24.1
 idna==3.4
 image==1.5.33
 importlib-metadata==6.6.0
