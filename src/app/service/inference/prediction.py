@@ -2,16 +2,15 @@ from typing import List
 import json
 import requests
 import numpy as np
-from app.service.preprocess import preprocess_data
-from app.config import settings
+from app.service.preprocess.preprocess_data import preprocess_data
+from app.config import apiClient
 from app.model_info import modelInfo
 from app.service.errors import *
 
 def predict_data(data: List[dict]) -> List[List[int]]:
     try:
-        data = json.dumps({"signature_name": "serving_default", "instances": data})
-        headers = {"content-type": "application/json"}
-        json_response = requests.post(settings.url, data=data, headers=headers)
+        apiClient.datas["instances"] = data
+        json_response = requests.post(apiClient.url, data=json.dumps(apiClient.datas), headers=apiClient.headers)
         predictions = json.loads(json_response.text)['predictions']
         return predictions
     except:
@@ -25,7 +24,7 @@ def decode_predictions(predictions: List[List[int]]) -> List[List[int]]:
 
 def predict(file: bytes) -> List[List[int]]:
     try:
-        input_data = preprocess_data.preprocess_data(file)
+        input_data = preprocess_data(file)
         predictions = predict_data(input_data)
         result = decode_predictions(predictions)
         return result
