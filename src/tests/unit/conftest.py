@@ -1,47 +1,35 @@
 import pytest
 from requests import Response
-import pandas as pd
-from io import BytesIO
-from app.model_info import modelInfo
+from app.service.preprocess.preprocess_data import convert_data
 
 
-class Data:
-    def __init__(self):
-        self.data_path = "../data/test.csv"
-        self.invalid_data_path = "../data/invalid_test.csv"
+data_path = "../data/test.csv"
+invalid_data_path = "../data/invalid_test.csv"
 
-        with open(self.data_path, 'rb') as f:
-            self.bytesData = f.read()
 
-        with open(self.invalid_data_path, 'rb') as f:
-            self.invalid_bytesData = f.read()
+@pytest.fixture
+def bytes_data():
+    with open(data_path, 'rb') as f:
+        bytesData = f.read()
+    return bytesData
 
-    def file_path(self):
-        return self.data_path
+@pytest.fixture
+def invalid_bytes_data():
+    with open(invalid_data_path, 'rb') as f:
+        invalid_bytesData = f.read()
+    return invalid_bytesData
 
-    def invalid_file_path(self):
-        return self.invalid_data_path
+@pytest.fixture
+def list_data(bytes_data):
+    return convert_data(bytes_data)
 
-    def bytes_data(self):
-        return self.bytesData
+@pytest.fixture
+def prediction():
+    return [[0.0233333353, 0.976665854, 0.0]]
 
-    def invalid_bytes_data(self):
-        return self.invalid_bytesData
-
-    def list_data(self):
-        df = pd.read_csv(BytesIO(self.bytesData))
-        data = df.rename(columns=modelInfo.column_name_to_change)
-        data[modelInfo.label] = data[modelInfo.label].map(modelInfo.classes.index)
-        data = data.drop(modelInfo.label, axis=1)
-        return data.to_dict('records')
-
-    def prediction(self):
-        return [[0.0233333353, 0.976665854, 0.0]]
-
-    def final_result(self):
-        return ['Moderate']
-data = Data()
-
+@pytest.fixture
+def final_result():
+    return ['Moderate']
 
 
 def mocked_requests_post(url, data, headers):
@@ -57,31 +45,3 @@ def mocked_requests_post(url, data, headers):
     return MockResponse(url, data, headers).get_response()
 
 
-
-@pytest.fixture
-def bytes_data():
-    return data.bytes_data()
-
-@pytest.fixture
-def invalid_bytes_data():
-    return data.invalid_bytes_data()
-
-@pytest.fixture
-def list_data():
-    return data.list_data()
-
-@pytest.fixture
-def prediction():
-    return data.prediction()
-
-@pytest.fixture
-def final_result():
-    return data.final_result()
-
-@pytest.fixture
-def file_path():
-    return data.file_path()
-
-@pytest.fixture
-def invalid_file_path():
-    return data.invalid_file_path()

@@ -2,7 +2,6 @@ from typing import List
 import json
 import requests
 import numpy as np
-from app.service.preprocess.preprocess_data import preprocess_data
 from app.config import apiClient
 from app.model_info import modelInfo
 from app.service.errors import *
@@ -22,10 +21,9 @@ def decode_predictions(predictions: List[List[int]]) -> List[List[int]]:
     return [modelInfo.classes[predict] for predict in predictions]
 
 
-def predict(file: bytes) -> List[List[int]]:
+def predict(data: List[dict]) -> List[List[int]]:
     try:
-        input_data = preprocess_data(file)
-        predictions = predict_data(input_data)
+        predictions = predict_data(data)
         result = decode_predictions(predictions)
         return result
     except Exception as err:

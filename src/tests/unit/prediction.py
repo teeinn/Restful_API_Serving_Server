@@ -20,17 +20,10 @@ def test_decode_predictions_returns_final_result(client, prediction, final_resul
     assert result == final_result
 
 
-def test_predict_returns_final_result(client, monkeypatch, bytes_data, final_result):
+def test_predict_returns_final_result(client, monkeypatch, list_data, final_result):
     monkeypatch.setattr(requests, "post", mocked_requests_post)
-    result = predict(bytes_data)
+    result = predict(list_data)
     assert result == final_result
-
-
-def test_predict_returns_error_related_with_preprocess_data(client, monkeypatch, invalid_bytes_data, final_result):
-    with pytest.raises(InvalidDataException) as error:
-        monkeypatch.setattr(requests, "post", mocked_requests_post)
-        predict(invalid_bytes_data)
-    assert str(error.value) == "Error: Invalid input data format. Please provide valid file."
 
 
 def test_predict_returns_error_related_with_predict_data(client, monkeypatch, bytes_data, final_result):

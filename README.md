@@ -25,17 +25,21 @@ $ pip install -r requirements.txt
 1. Prepare valid csv file
 2. Run the jupyter notebook train.ipynb
 
-## How to inference
+## How to run
 1. Build services using docker-compose.yml
 ```sh
 $ docker-compose up
 ```
+
+## How to inference
 2. type 'http://localhost:8000/docs' in address bar
 3. upload your test csv file
 
 ## Restful API interfaces
-1. POST
-- '/predict/csv': return inference results of your input csv file
+1. GET
+- "/v1/health/live": check serving server alive
+2. POST
+- "/v1/models/random_forest/infer": return inference results of your input csv file
 
 ## Model & Metrics
 1. Model: Random Forest

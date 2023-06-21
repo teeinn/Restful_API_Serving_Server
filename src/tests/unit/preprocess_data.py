@@ -1,5 +1,6 @@
 import pytest
-from app.service.preprocess.preprocess_data import *
+from app.service.preprocess.preprocess_data import preprocess_data
+from app.service.errors import *
 
 
 def test_preprocess_data_returns_dictionary_list(client, bytes_data, list_data):
