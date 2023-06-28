@@ -1,4 +1,4 @@
-Restful API Server for Model Serving with Tensorflow Serving
+Restful API Serving Server with Tensorflow Serving
 =============
 Tensorflow Serving을 이용하여 Fastapi로 구현한 Model Serving 서버입니다.<br> 
 
